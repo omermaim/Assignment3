@@ -6,11 +6,10 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 public class UserService {
-    System Service_controller;
+    System Service_controller = System.getinstance();
 
-    public UserService(System service_controller) {
-        Service_controller = System.getinstance();
-    }
+    // public UserService(System service_controller) {
+    // }
     public boolean Login(String login_name,String login_password){
         return Service_controller.Login(login_name,login_password);
     }
