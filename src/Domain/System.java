@@ -1,5 +1,6 @@
 package Domain;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 public class System {
@@ -16,4 +17,15 @@ public class System {
 
     }
 
+    public boolean Login(String login_name, String login_password) {
+        return false;
+    }
+
+    public boolean addReferee(String name, int id, Date birthdate, int phone) {
+        return false;
+    }
+
+    public boolean gamePlacement(int hometeam_id, int guestteam_id, ArrayList<Referee> threereferees) {
+        return false;
+    }
 }
