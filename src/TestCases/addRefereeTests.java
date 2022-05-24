@@ -1,4 +1,4 @@
-package Tests;
+package TestCases;
 
 public class addRefereeTests {
     
