@@ -4,7 +4,7 @@ package Domain;
 public class User {
     private String username;
     private String password;
-    private Boolean connected;
+    private String UserID;
 
     public void setUsername(String username) {
         this.username = username;
@@ -14,14 +14,14 @@ public class User {
         this.password = password;
     }
 
-    public void setConnected(Boolean connected) {
-        this.connected = connected;
+    public void setUserID(String UserID) {
+        this.UserID = UserID;
     }
 
-    public User(String username, String password, Boolean connected) {
+    public User(String username, String password, String UserID) {
         this.username = username;
         this.password = password;
-        this.connected = connected;
+        this.UserID = UserID;
     }
 
     public String getUsername() {
@@ -32,7 +32,7 @@ public class User {
         return password;
     }
 
-    public Boolean getConnected() {
-        return connected;
+    public String getUserID() {
+        return UserID;
     }
 }
