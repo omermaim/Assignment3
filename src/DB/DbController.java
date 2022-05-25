@@ -3,11 +3,9 @@ import Domain.Game;
 import Domain.Referee;
 import Domain.Team;
 import Domain.User;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
 
 public class DbController {
 
@@ -53,7 +51,7 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertReferee(int id, String name, String PhoneNumber, String birthday){
+    public boolean insertReferee(int id, String name, String PhoneNumber, Date birthday){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
@@ -62,7 +60,7 @@ public class DbController {
             stmt.setInt(1, id);
             stmt.setString(2, name);
             stmt.setString(3, PhoneNumber);
-            stmt.setString(4, birthday);
+            stmt.setDate(4, birthday);
 
             return stmt.execute();
         } catch (SQLException e ) {
@@ -91,7 +89,7 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertUser(String username, String password, int UserID){
+    public boolean insertUser(String username, String password, int UserID){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(

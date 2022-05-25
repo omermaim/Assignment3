@@ -8,7 +8,6 @@ public class Referee extends User{
     private String name;
     private String PhoneNumber;
     private Date birthday;
-    private ArrayList<String> leagues;
 
     public Referee(int ID, String name, String phoneNumber, Date birthday, String username, String password) {
         super(username, password, ID);
@@ -16,7 +15,6 @@ public class Referee extends User{
         this.ID = ID;
         this.PhoneNumber = phoneNumber;
         this.birthday = birthday;
-        this.leagues = new ArrayList<String>();
     }
 
     @Override
@@ -59,23 +57,5 @@ public class Referee extends User{
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
-    }
-
-    public ArrayList<String> getLeagues() {
-        return leagues;
-    }
-
-    public void setLeagues(ArrayList<String> leagues) {
-        this.leagues = leagues;
-    }
-
-    public boolean addLeague(String league) {
-        if(this.leagues.contains(league)){
-            return false;
-        }
-        else{
-            this.leagues.add(league);
-            return true;
-        }
     }
 }

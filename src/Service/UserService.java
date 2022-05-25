@@ -17,7 +17,7 @@ public class UserService {
     public boolean addReferee(String name, String id, String password,String birthdate,String phone){
         return Service_controller.addReferee(name,id,password,birthdate,phone);
     }
-    public boolean gamePlacement(int hometeam_id, int guestteam_id, ArrayList<Referee> threereferees,Date date){
-        return Service_controller.gamePlacement(hometeam_id,guestteam_id,threereferees);
+    public boolean gamePlacement(int hometeam_id, int guestteam_id, ArrayList<Referee> threereferees, Date date){
+        return Service_controller.gamePlacement(hometeam_id,guestteam_id,threereferees, date);
     }
 }

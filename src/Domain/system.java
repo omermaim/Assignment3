@@ -2,25 +2,18 @@ package Domain;
 
 import java.sql.Date;
 import java.util.ArrayList;
+
+import DB.DbAdapter;
 import DB.DbController;
 
 public class system {
     private static system system =null;
-    private User current_user;
-    private ArrayList<User> users;
-    private ArrayList<Referee> referees;
-    private ArrayList<Game> games;
-    private ArrayList<Team> teams;
-    private DbController db;
+    private ArrayList<User> LoggedInUsers;
+    private DbAdapter db;
 
     private system() {
-        db = new DbController();
-        users = db.getAllUsers();
-        referees = db.getAllReferees();
-
-//        games = db.getAllGames();
-//        teams = db.getAllTeams();
-
+        db = new DbAdapter();
+        LoggedInUsers = new ArrayList<>();
     }
 
 
@@ -32,131 +25,61 @@ public class system {
 
     }
 
-    /*Getters and setters */
-
-    public ArrayList<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(ArrayList<User> users) {
-        this.users = users;
-    }
-
-    public ArrayList<Referee> getReferees() {
-        return referees;
-    }
-
-    public void setReferees(ArrayList<Referee> referees) {
-        this.referees = referees;
-    }
-
-    public ArrayList<Game> getGames() {
-        return games;
-    }
-
-    public void setGames(ArrayList<Game> games) {
-        this.games = games;
-    }
-
-    public ArrayList<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(ArrayList<Team> teams) {
-        this.teams = teams;
-    }
-
-    public DbController getDb() {
-        return db;
-    }
-
-    public void setDb(DbController db) {
-        this.db = db;
-    }
-
-    /*end of getter and setters*/
-
-
-    public boolean Login(String login_name, String login_password) {
-//        if ()
-        return false;
-    }
-
-    public boolean addReferee(String name, String id,String password, String birthdate, String phone) {
-        if (current_user==null) { return false;}
-        /*check if user exists*/
-        if (!this.UserExists(name,id)){
-//            add user
-//            InsertUser
-            if (!db.InsertUser(name,password,id)) {
-                System.out.println("Failed insert user to DB");
-                return false;
-            }
-        } else {
-            /*check valid password*/
-            System.out.println("User already exists in DB ! check that the password is valid");
-            if (!CheckValidPasswordUser(name,id,password)) {
-                System.out.println("Wrong password ! ");
-                return false;
-            }
-        }
-        if (!this.RefereeExists(name,id)){
-            if (db.InsertReferee(id,name,phone,birthdate)){
-                System.out.println("Add Referee successfully");
-            } else {
-                System.out.println("Failed insert Referee to DB");
-            }
-        } else {
-            System.out.println("Referee already exists.");
+    public boolean Login(String username, String password) {
+        if(username == null || password == null){
+            System.out.println("Login Failed - Invalid Input");
             return false;
         }
-        return true;
+        User user = db.getUser(username);
+        if(user == null || user.getPassword() != password) {
+            System.out.println("Login Failed - Invalid Username or Password");
+            return false;
+        } else{
+            this.LoggedInUsers.add(user);
+            return true;
+        }
+
     }
 
-
-    /*checker of objects in DB*/
-    public boolean gamePlacement(int hometeam_id, int guestteam_id, ArrayList<Referee> threereferees) {
-        return false;
-    }
-    private boolean UserExists(String name,String id) {
-        /*checks if there is a user with this name and ID in DB*/
-        for (User user: this.getUsers())
-        {
-            if (user.getUsername().equals(name) && user.getUserID().equals(id)){
+    public boolean addReferee(int ID, String name, String phoneNumber, Date birthday, String username, String password) {
+        /*check arguments*/
+        if(ID <= 0 || name == null || phoneNumber == null ||  birthday == null || username == null || password == null){
+            System.out.println("Referee Registration Failed - Invalid Input");
+            return false;
+        }
+        /*check if user or referee ID exists*/
+        else if (db.refereeExists(ID, username)) {
+            System.out.println("Referee Registration Failed - Username or ID already exists");
+            return false;
+        }
+        /* register referee*/
+        else {
+            if (db.addReferee(ID, name, phoneNumber, birthday, username, password)){
+                System.out.println("Add Referee successfully");
                 return true;
+            } else {
+                System.out.println("Referee Registration Cancelled - Failed insert Referee to DB");
+                return false;
             }
         }
-        return false;
-    }
 
-    private boolean CheckValidPasswordUser(String name,String id,String pass) {
-        /*checks if the password is the same password of the user with this name and ID that exists in DB*/
-        for (User user: this.getUsers())
-        {
-            if (user.getUsername().equals(name) && user.getUserID().equals(id)){
-                if (user.getPassword().equals(pass)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean RefereeExists(String name,String id) {
-        /*checks if there is a referee with this name and ID in DB*/
-        for (Referee referee: this.getReferees())
-        {
-            if (referee.getName().equals(name) && referee.getID().equals(id)){
-                return true;
-            }
-        }
-        return false;
     }
 
 
-    /*End of checker of objects in DB*/
+    public boolean gamePlacement(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date) {
+        /*check arguments*/
+        if(db.checkGameID(game_id) && db.checkTeams(home_team, guest_team, date) && db.checkThreeReferres(threereferees)){
+            System.out.println("Game Placement Failed - Invalid Input");
+            return false;
+        }
+        else if(db.placeGame(game_id, home_team, guest_team, threereferees, date)){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
 
 
 }

@@ -26,15 +26,6 @@ public class User {
         this.UserID = UserID;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof User))
-            return false;
-        User other = (User) o;
-        return this.getUserID() == other.getUserID();
-    }
 
     public String getUsername() {
         return username;
@@ -53,7 +44,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(UserID, user.UserID);
+        return Objects.equals(username, user.username) || Objects.equals(UserID, user.UserID);
     }
 
     @Override
