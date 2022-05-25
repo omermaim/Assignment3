@@ -29,13 +29,19 @@ public class DbController {
         try {
             Connection conn = getConnection();
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from Referee");
+            ResultSet rs = stmt.executeQuery(
+                    "SELECT ID, name, phonenumber, birthday, username, password " +
+                        "FROM (Referee INNER JOIN Users ON Referee.ID == Users.UserID);");
+
             ArrayList<Referee> res = new ArrayList<>();
             while (rs.next()) {
                 Referee referee = new Referee(
+                        rs.getString("ID"),
+                        rs.getString("name"),
+                        rs.getString("phonenumber"),
+                        rs.getDate("birthday"),
                         rs.getString("username"),
-                        rs.getString("password"),
-                        rs.getInt("UserID"));
+                        rs.getString("password"));
                 res.add(referee);
             }
             return res;
@@ -45,13 +51,13 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertReferee(int id, String name, String PhoneNumber, String birthday){
+    public boolean InsertReferee(String id, String name, String PhoneNumber, String birthday){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
                     "INSERT INTO referee(ID, name, PhoneNumber, birthday)\n" +
                     "VALUES ( ? , ? , ? , ? );");
-            stmt.setInt(1, id);
+            stmt.setString(1, id);
             stmt.setString(2, name);
             stmt.setString(3, PhoneNumber);
             stmt.setString(4, birthday);
@@ -73,7 +79,7 @@ public class DbController {
                 User user  = new User(
                         rs.getString("username"),
                         rs.getString("password"),
-                        rs.getInt("UserID"));
+                        rs.getString("UserID"));
                 res.add(user);
             }
             return res;
@@ -83,7 +89,7 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertUser(String username, String password, int UserID){
+    public boolean InsertUser(String username, String password, String UserID){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
@@ -92,7 +98,7 @@ public class DbController {
 
             stmt.setString(1, username);
             stmt.setString(2, password);
-            stmt.setInt(3, UserID);
+            stmt.setString(3, UserID);
 
             return stmt.execute();
         } catch (SQLException e ) {

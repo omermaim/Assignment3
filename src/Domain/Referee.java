@@ -4,14 +4,14 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 public class Referee extends User{
-    private String name;
     private String ID;
-    private int PhoneNumber;
+    private String name;
+    private String PhoneNumber;
     private Date birthday;
     private ArrayList<League> leagues;
 
-    public Referee(String username, String password, Boolean connected, String name, String ID, int phoneNumber, Date birthday) {
-        super(username, password, connected);
+    public Referee(String ID, String name, String phoneNumber, Date birthday, String username, String password) {
+        super(username, password, ID);
         this.name = name;
         this.ID = ID;
         this.PhoneNumber = phoneNumber;
@@ -19,20 +19,15 @@ public class Referee extends User{
         this.leagues = new ArrayList<League>();
     }
 
-    public ArrayList<League> getLeagues() {
-        return leagues;
-    }
-
-    public void AddLeague(League league) {
-        this.leagues.add(league);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Referee))
+            return false;
+        Referee other = (Referee) o;
+        return (this.getID() == null && other.getID() == null)
+                || (this.getID() != null && this.getID().equals(other.getID()));
     }
 
     public String getID() {
@@ -43,11 +38,19 @@ public class Referee extends User{
         this.ID = ID;
     }
 
-    public int getPhoneNumber() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhoneNumber() {
         return PhoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         PhoneNumber = phoneNumber;
     }
 
@@ -59,4 +62,11 @@ public class Referee extends User{
         this.birthday = birthday;
     }
 
+    public ArrayList<League> getLeagues() {
+        return leagues;
+    }
+
+    public void setLeagues(ArrayList<League> leagues) {
+        this.leagues = leagues;
+    }
 }
