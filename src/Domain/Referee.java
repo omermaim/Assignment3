@@ -4,19 +4,19 @@ import java.sql.Date;
 import java.util.ArrayList;
 
 public class Referee extends User{
-    private String ID;
+    private int ID;
     private String name;
     private String PhoneNumber;
     private Date birthday;
-    private ArrayList<League> leagues;
+    private ArrayList<String> leagues;
 
-    public Referee(String ID, String name, String phoneNumber, Date birthday, String username, String password) {
+    public Referee(int ID, String name, String phoneNumber, Date birthday, String username, String password) {
         super(username, password, ID);
         this.name = name;
         this.ID = ID;
         this.PhoneNumber = phoneNumber;
         this.birthday = birthday;
-        this.leagues = new ArrayList<League>();
+        this.leagues = new ArrayList<String>();
     }
 
     @Override
@@ -26,15 +26,14 @@ public class Referee extends User{
         if (!(o instanceof Referee))
             return false;
         Referee other = (Referee) o;
-        return (this.getID() == null && other.getID() == null)
-                || (this.getID() != null && this.getID().equals(other.getID()));
+        return this.getID() == other.getID();
     }
 
-    public String getID() {
+    public int getID() {
         return ID;
     }
 
-    public void setID(String ID) {
+    public void setID(int ID) {
         this.ID = ID;
     }
 
@@ -62,11 +61,21 @@ public class Referee extends User{
         this.birthday = birthday;
     }
 
-    public ArrayList<League> getLeagues() {
+    public ArrayList<String> getLeagues() {
         return leagues;
     }
 
-    public void setLeagues(ArrayList<League> leagues) {
+    public void setLeagues(ArrayList<String> leagues) {
         this.leagues = leagues;
+    }
+
+    public boolean addLeague(String league) {
+        if(this.leagues.contains(league)){
+            return false;
+        }
+        else{
+            this.leagues.add(league);
+            return true;
+        }
     }
 }

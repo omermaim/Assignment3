@@ -1,16 +1,26 @@
 package Domain;
 
 public class Team {
-    private String name;
     private int team_id;
+    private String name;
     private String field;
-    private League league;
+    private String league;
 
-    public Team(String name, int team_id, String field, League league) {
-        this.name = name;
+    public Team(int team_id, String name, String field, String league) {
         this.team_id = team_id;
+        this.name = name;
         this.field = field;
         this.league = league;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Team))
+            return false;
+        Team other = (Team) o;
+        return this.getTeam_id() == other.getTeam_id();
     }
 
     public String getName() {
@@ -37,11 +47,11 @@ public class Team {
         this.field = field;
     }
 
-    public League getLeague() {
+    public String getLeague() {
         return league;
     }
 
-    public void setLeague(League league) {
+    public void setLeague(String league) {
         this.league = league;
     }
 }
