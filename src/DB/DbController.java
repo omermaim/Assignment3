@@ -72,7 +72,8 @@ public class DbController {
             stmt.setString(3, PhoneNumber);
             stmt.setDate(4, birthday);
 
-            return stmt.execute();
+            stmt.execute();
+            return true;
         } catch (SQLException e ) {
             System.out.println(e);
         }
@@ -110,7 +111,8 @@ public class DbController {
             stmt.setString(2, password);
             stmt.setInt(3, UserID);
 
-            return stmt.execute();
+            stmt.execute();
+            return true;
         } catch (SQLException e ) {
             System.out.println(e);
         }
@@ -156,7 +158,8 @@ public class DbController {
             stmt.setString(2, name);
             stmt.setString(3, field);
 
-            return stmt.execute();
+            stmt.execute();
+            return true;
         } catch (SQLException e ) {
             System.out.println(e);
         }
@@ -204,7 +207,8 @@ public class DbController {
             stmt.setDate(7, game_date);
             stmt.setString(8, field);
 
-            return stmt.execute();
+            stmt.execute();
+            return true;
         } catch (SQLException e ) {
             System.out.println(e);
         }
@@ -261,49 +265,46 @@ public class DbController {
     }
 
 
-    public void createTables(){
+    public boolean createTables(){
         try {
             Connection conn = getConnection();
             Statement stmt = conn.createStatement();
-            stmt.execute(
-            "Drop Table If EXISTS Users;\n" +
-                "Drop Table If EXISTS Referee;\n" +
-                "Drop Table If EXISTS Team;\n" +
-                "Drop Table If EXISTS Game;\n" +
-                "\n" +
-                "CREATE TABLE Referee (\n" +
-                "    ref_id int NOT NULL PRIMARY KEY,\n" +
-                "    name varchar(255) NOT NULL,\n" +
-                "    PhoneNumber varchar(15),\n" +
-                "    birthday DATE\n" +
-                ");\n" +
-                "\n" +
-                "CREATE TABLE Users (\n" +
-                "    username varchar(16) NOT NULL PRIMARY KEY,\n" +
-                "    password varchar(16) NOT NULL,\n" +
-                "\tUserID int NOT NULL,\n" +
-                "\tFOREIGN KEY(UserID) REFERENCES Referee(ref_id)\n" +
-                ");\n" +
-                "\n" +
-                "CREATE TABLE Team (\n" +
-                "    team_id int NOT NULL PRIMARY KEY,\n" +
-                "    name varchar(255) NOT NULL,\n" +
-                "    field varchar(255) NOT NULL,\n" +
-                ");\n" +
-                "\n" +
-                "CREATE TABLE Game (\n" +
-                "    game_id int NOT NULL PRIMARY KEY,\n" +
-                "    home_team int NOT NULL REFERENCES Team(team_id),\n" +
-                "    guest_team int NOT NULL REFERENCES Team(team_id),\n" +
-                "    ref1 int NOT NULL REFERENCES Referee(ref_id),\n" +
-                "    ref2 int NOT NULL REFERENCES Referee(ref_id),\n" +
-                "    ref3 int NOT NULL REFERENCES Referee(ref_id),\n" +
-                "    game_date DATE NOT NULL,\n" +
-                "    field varchar(255) NOT NULL\n" +
-                ");");
+            stmt.execute("Drop Table If EXISTS Users;");
+            stmt.execute("Drop Table If EXISTS Referee;");
+            stmt.execute("Drop Table If EXISTS Team;");
+            stmt.execute("Drop Table If EXISTS Game;");
+            stmt.execute("CREATE TABLE Referee (\n" +
+                    "    ref_id int NOT NULL PRIMARY KEY,\n" +
+                    "    name varchar(255) NOT NULL,\n" +
+                    "    PhoneNumber varchar(15),\n" +
+                    "    birthday DATE\n" +
+                    ");");
+            stmt.execute("CREATE TABLE Users (\n" +
+                    "    username varchar(16) NOT NULL PRIMARY KEY,\n" +
+                    "    password varchar(16) NOT NULL,\n" +
+                    "    UserID int NOT NULL REFERENCES Referee(ref_id)\n" +
+                    ");");
+            stmt.execute("CREATE TABLE Team (\n" +
+                    "    team_id int NOT NULL PRIMARY KEY,\n" +
+                    "    name varchar(255) NOT NULL,\n" +
+                    "    field varchar(255) NOT NULL\n" +
+                    ");");
+            stmt.execute("CREATE TABLE Game (\n" +
+                    "    game_id int NOT NULL PRIMARY KEY,\n" +
+                    "    home_team int NOT NULL REFERENCES Team(team_id),\n" +
+                    "    guest_team int NOT NULL REFERENCES Team(team_id),\n" +
+                    "    ref1 int NOT NULL REFERENCES Referee(ref_id),\n" +
+                    "    ref2 int NOT NULL REFERENCES Referee(ref_id),\n" +
+                    "    ref3 int NOT NULL REFERENCES Referee(ref_id),\n" +
+                    "    game_date DATE NOT NULL,\n" +
+                    "    field varchar(255) NOT NULL\n" +
+                    ");");
+
+            return true;
 
         } catch (SQLException e ) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
+            return false;
         }
     }
 

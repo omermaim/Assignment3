@@ -17,9 +17,11 @@ public class DbAdapter {
 
     public User getUser(String username){
         ArrayList<User> users = dbController.getAllUsers();
-        for (int i = 0; i < users.size(); i++) {
-            if(users.get(i).getUsername() == username){
-                return users.get(i);
+        if(users != null){
+            for (int i = 0; i < users.size(); i++) {
+                if(users.get(i).getUsername() == username){
+                    return users.get(i);
+                }
             }
         }
         return null;
@@ -27,12 +29,14 @@ public class DbAdapter {
 
     public boolean refereeExists(int ref_id, String username){
         ArrayList<Referee> referees = dbController.getAllReferees();
-        for (int i = 0; i < referees.size(); i++) {
-            if(referees.get(i).getUsername() == username || referees.get(i).getUserID() == ref_id){
-                return false;
+        if(referees != null){
+            for (int i = 0; i < referees.size(); i++) {
+                if(referees.get(i).getUsername() == username || referees.get(i).getUserID() == ref_id){
+                    return true;
+                }
             }
         }
-        return true;
+        return false;
     }
 
     public boolean addReferee(int ID, String name, String phoneNumber, Date birthday, String username, String password) {

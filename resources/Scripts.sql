@@ -13,14 +13,13 @@ CREATE TABLE Referee (
 CREATE TABLE Users (
     username varchar(16) NOT NULL PRIMARY KEY,
     password varchar(16) NOT NULL,
-	UserID int NOT NULL,
-	FOREIGN KEY(UserID) REFERENCES Referee(ref_id)
+    UserID int NOT NULL REFERENCES Referee(ref_id)
 );
 
 CREATE TABLE Team (
     team_id int NOT NULL PRIMARY KEY,
     name varchar(255) NOT NULL,
-    field varchar(255) NOT NULL,
+    field varchar(255) NOT NULL
 );
 
 CREATE TABLE Game (
@@ -33,8 +32,3 @@ CREATE TABLE Game (
     game_date DATE NOT NULL,
     field varchar(255) NOT NULL
 );
-
-
-
-INSERT INTO referee(ref_id, name, PhoneNumber, birthday)
-VALUES ('12321', 'Doug Judy', '1-800-222-0451', '26/06/1994');
