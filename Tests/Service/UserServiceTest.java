@@ -11,65 +11,138 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
-    UserService userService = new UserService();
-    DbController dbController = new DbController();
+    private static DbController dbController;
+    private static UserService userService;
+//    UserService userService = new UserService();
+//    DbController dbController = new DbController();
 
-    @Test
-    void addReferee() {
-        assertTrue(dbController.createTables());
-        assertTrue(userService.addReferee(1, "tomer weitzman", "050-8873928",
-                new Date(1994,6,26), "tomer", "tomer123"));
-        //same id
-        assertFalse(userService.addReferee(1, "tomer weitzman", "050-8873928",
-                new Date(1994,6,26), "tomer2", "tomer123"));
-        //same username
-        assertFalse(userService.addReferee(2, "tomer weitzman", "050-8873928",
-                new Date(1994,6,26), "tomer", "tomer123"));
-        assertTrue(userService.addReferee(2, "tomer weitzman", "050-8873928",
-                new Date(1994,6,26), "tomer2", "tomer123"));
-
-
-    }
-
-    @Test
-    void login() {
+    @org.junit.jupiter.api.BeforeAll
+    static void beforeUnitTests(){
+        userService = new UserService();
+        dbController = new DbController();
         dbController.createTables();
-        assertTrue(userService.addReferee(1, "tomer weitzman", "050-8873928",
-                new Date(1994,6,26), "tomer1", "tomer123"));
-        assertTrue(userService.addReferee(2, "tomer weitzman", "050-8873928",
-                new Date(1994,6,26), "tomer2", "tomer123"));
-        //Invalid username
-        assertFalse(userService.Login("tomer3", "tomer123"));
-        //Invalid password
-        assertFalse(userService.Login("tomer1", "tomer321"));
-        //valid login1
-        assertTrue(userService.Login("tomer1", "tomer123"));
-        //valid login2
-        assertTrue(userService.Login("tomer2", "tomer123"));
-        //Invalid login - already logged
-        assertFalse(userService.Login("tomer1", "tomer123"));
-    }
-
-    @Test
-    void gamePlacement() {
-        dbController.createTables();
-        //refs
-        assertTrue(userService.addReferee(1, "ref1", "050-8873928",
-                new Date(1994,6,26), "ref1", "tomer123"));
-        assertTrue(userService.addReferee(2, "ref2", "050-8873928",
-                new Date(1994,6,26), "ref2", "tomer123"));
-        assertTrue(userService.addReferee(3, "ref3", "050-8873928",
-                new Date(1994,6,26), "ref3", "tomer123"));
-        ArrayList<Referee> threereferees = dbController.getAllReferees();
-        assertTrue(userService.addReferee(4, "ref4", "050-8873928",
-                new Date(1994,6,26), "ref4", "tomer123"));
+        /*TODO:
+            Maybe it's better to add this user to DB instead of doing it here*/
+        userService.addReferee(20, "tomer weitzman", "054-5872007",
+                new Date(1920,2,20), "bgu4ever", "bgu2022");
+        userService.addReferee(2, "Weitzman Tomer Weitzman", "050-8873928",
+                new Date(1994,6,26), "Tomer", "tomer123");
+        userService.addReferee(15, "Man Omri Man", "052-5216644",
+                new Date(1993,12,15), "Omri", "tomer555");
+        userService.addReferee(31, "Weitzman Dylan Weitzman", "050-8873928",
+                new Date(2000,5,31), "Dylan", "dylan123");
+        userService.addReferee(4, "ref4", "050-8873928",
+                new Date(1994,6,26), "ref4", "tomer123");
+        userService.addReferee(5, "ref5", "050-8873928",
+                new Date(1994,6,26), "ref5", "tomer123");
 
         //Teams
-        assertTrue(userService.addTeam(1, "team1", "sami-ofer"));
+        userService.addTeam(1, "Hodisans", "sami-ofer");
+        userService.addTeam(2, "Maimons", "nokia");
+        userService.addTeam(3, "team3", "kunhiya");
+
+    }
+
+
+    /*add Referee tests*/
+    @Test
+    void addReferee() {
+        assertTrue(userService.addReferee(12345678, "Yaniv Gadol", "054-1234567",
+                new Date(1994,1,1), "tomer", "tomer123"));
+    }
+
+    @Test
+    void addRefereeSameId() {
+        userService.addReferee(777, "tomer weitzman", "050-8873928",
+                new Date(1994,6,26), "kingtomer", "tomer123");
+        /*same id*/
+        assertFalse(userService.addReferee(777, "tomer weitzman", "050-8873928",
+                new Date(1994,6,26), "kingtomer2", "tomer123"));
+    }
+
+    @Test
+    void addRefereeSameUserName() {
+        /*same username*/
+        userService.addReferee(555, "tomer weitzman", "050-8873928",
+                new Date(1994,6,26), "CEOtomer", "tomer123");
+        assertFalse(userService.addReferee(222, "tomer weitzman", "050-8873928",
+                new Date(1994,6,26), "CEOtomer", "tomer123"));
+    }
+
+/*    @Test
+    void addRefereeMissingItems() {
+        *//*missing id*//*
+        assertFalse(userService.addReferee(, "Yaniv Gadol", "054-1234567",
+                new Date(1994,1,1), "tomer", "tomer123"));
+    }*/
+
+    @Test
+    void addRefereeInvalidBirthDay() {
+        /*1.1.2023 its an invalid date of birth*/
+        assertFalse(userService.addReferee(222, "Big Yaniv", "054-5872007",
+                new Date(2023,1,1), "Yaniv Katan", "yaniv20"));
+    }
+
+    /*End of add Referee tests*/
+
+
+
+    /*Login tests */
+    @Test
+    void login() {
+        assertTrue(userService.Login("bgu4ever", "bgu2022"));
+    }
+
+    @Test
+    void loginWrongPassword() {
+        /*2022 is not the password of the user "bgu4ever"*/
+        assertFalse(userService.Login("bgu4ever", "2022"));
+    }
+
+    @Test
+    void loginIncorrectUsername() {
+        /*There is no user with username "bguNot4ever"*/
+        assertFalse(userService.Login("bguNot4ever", "bgu2022"));
+    }
+
+    @Test
+    void loginAlreadyLogged() {
+        /*TODO :
+        *  Ask Tomer about logout or think of an elegant way to test it
+        * */
+        userService.addReferee(999, "Ben Gurion", "054-5872007",
+                new Date(1886,10,16), "KingDavid", "bgu1886");
+        userService.Login("KingDavid", "bgu1886");
+        assertFalse(userService.Login("KingDavid", "bgu1886"));
+    }
+
+    /*End of login tests */
+
+
+
+
+
+    /*Game Placement tests */
+    @Test
+    void gamePlacement() {
+        //refs
+//        assertTrue(userService.addReferee(2, "Weitzman Tomer Weitzman", "050-8873928",
+//                new Date(1994,6,26), "Tomer", "tomer123"));
+//        assertTrue(userService.addReferee(15, "Man Omri Man", "052-5216644",
+//                new Date(1993,12,15), "Omri", "tomer555"));
+//        assertTrue(userService.addReferee(31, "Weitzman Dylan Weitzman", "050-8873928",
+//                new Date(2000,5,31), "Dylan", "dylan123"));
+        ArrayList<Referee> threereferees = dbController.getAllReferees();
+//        assertTrue(userService.addReferee(4, "ref4", "050-8873928",
+//                new Date(1994,6,26), "ref4", "tomer123"));
+
+        //Teams
         Team team1 = dbController.getTeamById(1);
-        assertTrue(userService.addTeam(2, "team2", "nokia"));
         Team team2 = dbController.getTeamById(2);
-        assertTrue(userService.addTeam(3, "team3", "kunhiya"));
+
+        assertTrue(userService.gamePlacement(1,team1,team2, threereferees, new Date(2022,8,1), team1.getField()));
+
+        /*assertTrue(userService.addTeam(3, "team3", "kunhiya"));*/
 
         //same team
         assertFalse(userService.gamePlacement(1,team1,team1, threereferees, new Date(2022,8,1), team1.getField()));
@@ -78,4 +151,36 @@ class UserServiceTest {
 
 
     }
+
+    @Test
+    void gamePlacementRefereeNotAvailable() {
+        /*Referee 2 (tomer) not available at 1/8/22 because he works in team1.getField() (game_id:1) */
+        ArrayList<Referee> threereferees = new ArrayList<>();
+        threereferees.add(dbController.getRefereeById(20));
+        threereferees.add(dbController.getRefereeById(2));
+        threereferees.add(dbController.getRefereeById(4));
+        //Teams
+        Team team1 = dbController.getTeamById(1);
+        Team team2 = dbController.getTeamById(2);
+
+        assertFalse(userService.gamePlacement(11,team1,team2, threereferees, new Date(2022,8,1), team1.getField()));
+
+    }
+
+    @Test
+    void gamePlacementTeamNotAvailable() {
+        /*Team 1 (Hodisans) is not available because they supposed to lose to team "Maimons" in "Sami-Ofer" on this date */
+        ArrayList<Referee> threereferees = new ArrayList<>();
+        threereferees.add(dbController.getRefereeById(20));
+        threereferees.add(dbController.getRefereeById(5));
+        threereferees.add(dbController.getRefereeById(4));
+        //Teams
+        Team team1 = dbController.getTeamById(1);
+        userService.addTeam(3, "team3", "kunhiya");
+        Team team3 = dbController.getTeamById(3);
+
+        assertFalse(userService.gamePlacement(12,team1,team3, threereferees, new Date(2022,8,1), team1.getField()));
+    }
+
+    /*End of Game Placement tests*/
 }
