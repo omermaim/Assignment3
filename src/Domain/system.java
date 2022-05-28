@@ -63,7 +63,6 @@ public class system {
                 return false;
             }
         }
-
     }
 
     public boolean gamePlacement(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date, String field) {
@@ -75,6 +74,31 @@ public class system {
         }
         return db.placeGame(game_id, home_team, guest_team, threereferees, date, field);
     }
+
+
+    public boolean addTeam(int ref_id, String name, String phoneNumber, Date birthday, String username, String password) {
+        /*check arguments*/
+        if(ref_id <= 0 || name == null || phoneNumber == null ||  birthday == null || username == null || password == null){
+            System.out.println("Referee Registration Failed - Invalid Input");
+            return false;
+        }
+        /*check if user or referee ref_id exists*/
+        else if (db.refereeExists(ref_id, username)) {
+            System.out.println("Referee Registration Failed - Username or ID already exists");
+            return false;
+        }
+        /* register referee*/
+        else {
+            if (db.addReferee(ref_id, name, phoneNumber, birthday, username, password)){
+                System.out.println("Add Referee successfully");
+                return true;
+            } else {
+                System.out.println("Referee Registration Cancelled - Failed insert Referee to DB");
+                return false;
+            }
+        }
+    }
+
 
 
 }
