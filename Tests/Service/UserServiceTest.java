@@ -73,7 +73,8 @@ class UserServiceTest {
 
         //same team
         assertFalse(userService.gamePlacement(1,team1,team1, threereferees, new Date(2022,8,1), team1.getField()));
-
+        //field doesn't belong to either team
+        assertFalse(userService.gamePlacement(1,team1,team2, threereferees, new Date(2022,8,1), "WonderLand"));
 
 
     }
