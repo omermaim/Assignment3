@@ -17,8 +17,7 @@ public class DbController {
 
     private Connection getConnection(){
         try{
-            Connection conn = DriverManager.getConnection(url);
-            return conn;
+            return DriverManager.getConnection(url);
         }
         catch (SQLException e ) {
             throw new Error("Error connecting to Data Base", e);
@@ -47,7 +46,7 @@ public class DbController {
                 res.add(referee);
             }
             return res;
-        } catch (SQLException e ) {
+        } catch (SQLException e) {
             System.out.println(e);
         }
         return null;
@@ -79,6 +78,31 @@ public class DbController {
         }
         return false;
     }
+
+    public Referee getRefereeById(int ref_id) {
+        try {
+            Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement("select * from Referee WHERE Referee.ref_id == ? ");
+            stmt.setInt(1, ref_id);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Game> games = this.getAllGames();
+            Referee referee = new Referee(
+                    rs.getInt("ref_id"),
+                    rs.getString("name"),
+                    rs.getString("phonenumber"),
+                    rs.getDate("birthday"),
+                    rs.getString("username"),
+                    rs.getString("password"));
+
+            referee.setGames(this.getRefereeGames(referee, games));
+            return referee;
+        } catch (SQLException e ) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+
 
     public ArrayList<User> getAllUsers(){
         try {
@@ -147,7 +171,7 @@ public class DbController {
         return games;
     }
 
-    public boolean InsertTeam(int team_id, String name, String field){
+    public boolean insertTeam(int team_id, String name, String field){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
@@ -164,6 +188,26 @@ public class DbController {
             System.out.println(e);
         }
         return false;
+    }
+
+    public Team getTeamById(int team_id) {
+        try {
+            Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement("select * from Team WHERE Team.team_id == ? ");
+            stmt.setInt(1, team_id);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Game> games = this.getAllGames();
+            Team team  = new Team(
+                    rs.getInt("team_id"),
+                    rs.getString("name"),
+                    rs.getString("field"));
+
+            team.setGames(this.getTeamGames(team.getTeam_id(), games));
+            return team;
+        } catch (SQLException e ) {
+            System.out.println(e);
+        }
+        return null;
     }
 
     public ArrayList<Game> getAllGames(){
@@ -191,7 +235,7 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertGame(int game_id, int home_team_id, int guest_team_id, int ref1, int ref2, int ref3, Date game_date, String field){
+    public boolean insertGame(int game_id, int home_team_id, int guest_team_id, int ref1, int ref2, int ref3, Date game_date, String field){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
@@ -221,7 +265,7 @@ public class DbController {
             PreparedStatement stmt = conn.prepareStatement("select * from Game WHERE Game.game_id == ? ");
             stmt.setInt(1, game_id);
             ResultSet rs = stmt.executeQuery();
-            Game game  = new Game(
+            return new Game(
                     rs.getInt("game_id"),
                     rs.getInt("home_team_id"),
                     rs.getInt("guest_team_id"),
@@ -231,7 +275,6 @@ public class DbController {
                     rs.getDate("game_date"),
                     rs.getString("field"));
 
-            return game;
         } catch (SQLException e ) {
             System.out.println(e);
         }

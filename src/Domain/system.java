@@ -61,7 +61,7 @@ public class system {
         /* register referee*/
         else {
             if (db.addReferee(ref_id, name, phoneNumber, birthday, username, password)){
-                System.out.println("Add Referee successfully");
+                System.out.println("Added Referee successfully");
                 return true;
             } else {
                 System.out.println("Referee Registration Cancelled - Failed insert Referee to DB");
@@ -81,24 +81,19 @@ public class system {
     }
 
 
-    public boolean addTeam(int ref_id, String name, String phoneNumber, Date birthday, String username, String password) {
+    public boolean addTeam(int team_id, String name, String field) {
         /*check arguments*/
-        if(ref_id <= 0 || name == null || phoneNumber == null ||  birthday == null || username == null || password == null){
+        if(team_id <= 0 || name == null || field == null){
             System.out.println("Referee Registration Failed - Invalid Input");
             return false;
         }
-        /*check if user or referee ref_id exists*/
-        else if (db.refereeExists(ref_id, username)) {
-            System.out.println("Referee Registration Failed - Username or ID already exists");
-            return false;
-        }
-        /* register referee*/
+        /* register team*/
         else {
-            if (db.addReferee(ref_id, name, phoneNumber, birthday, username, password)){
-                System.out.println("Add Referee successfully");
+            if (db.addTeam(team_id, name, field)){
+                System.out.println("Added Team successfully");
                 return true;
             } else {
-                System.out.println("Referee Registration Cancelled - Failed insert Referee to DB");
+                System.out.println("Team Registration Cancelled - Failed insert Team to DB");
                 return false;
             }
         }

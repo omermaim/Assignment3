@@ -20,4 +20,7 @@ public class UserService {
     public boolean gamePlacement(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date, String field){
         return Service_controller.gamePlacement(game_id, home_team, guest_team, threereferees, date, field);
     }
+    public boolean addTeam(int team_id, String name, String field){
+        return Service_controller.addTeam(team_id, name, field);
+    }
 }

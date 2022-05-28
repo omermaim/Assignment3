@@ -6,7 +6,6 @@ import Domain.User;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class DbAdapter {
     DbController dbController;
@@ -39,8 +38,17 @@ public class DbAdapter {
         return false;
     }
 
-    public boolean addReferee(int ID, String name, String phoneNumber, Date birthday, String username, String password) {
-        if(dbController.insertReferee(ID, name, phoneNumber, birthday) && dbController.insertUser(username, password, ID)){
+    public boolean addReferee(int ref_id, String name, String phoneNumber, Date birthday, String username, String password) {
+        if(dbController.insertReferee(ref_id, name, phoneNumber, birthday) && dbController.insertUser(username, password, ref_id)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean addTeam(int team_id, String name, String field) {
+        if(dbController.insertTeam(team_id, name, field)){
             return true;
         }
         else{
@@ -72,7 +80,7 @@ public class DbAdapter {
                 return false;
             }
         }
-        return dbController.InsertGame(game_id, home_team.getTeam_id(), guest_team.getTeam_id(),
+        return dbController.insertGame(game_id, home_team.getTeam_id(), guest_team.getTeam_id(),
                 threereferees.get(0).getRef_id(), threereferees.get(1).getRef_id(), threereferees.get(2).getRef_id(), date, field);
     }
 
