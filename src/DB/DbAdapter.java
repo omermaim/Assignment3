@@ -6,6 +6,7 @@ import Domain.User;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class DbAdapter {
     DbController dbController;
@@ -24,10 +25,10 @@ public class DbAdapter {
         return null;
     }
 
-    public boolean refereeExists(int ID, String username){
+    public boolean refereeExists(int ref_id, String username){
         ArrayList<Referee> referees = dbController.getAllReferees();
         for (int i = 0; i < referees.size(); i++) {
-            if(referees.get(i).getUsername() == username || referees.get(i).getUserID() == ID){
+            if(referees.get(i).getUsername() == username || referees.get(i).getUserID() == ref_id){
                 return false;
             }
         }
@@ -43,43 +44,33 @@ public class DbAdapter {
         }
     }
 
-    public boolean checkGameID(int game_id){
-        if(game_id <= 0){
-            System.out.println("Game Placement Failed - Invalid Input");
+    public boolean placeGame(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date, String field) {
+        //check game exists
+        if(dbController.getGameById(game_id) != null){
+            System.out.println("Game Placement Failed - Game ID already exists");
             return false;
         }
-        else{
-            ArrayList<Game> games = dbController.getAllGames();
-            for (int i = 0; i < games.size(); i++) {
-                if(games.get(i).getGame_id() == game_id){
-                    System.out.println("Game Placement Failed - Game ID Already Exists");
+        else if(home_team.getField() != field && guest_team.getField() != field){
+            System.out.println("Game Placement Failed - Field doesn't belong to any of the teams");
+            return false;
+        }
+        ArrayList<Game> gamesInDate = dbController.getAllGamesByDate(date);
+        for (Game game : gamesInDate){
+            for (Referee ref : threereferees) {
+                if(ref.getRef_id() == game.getRef1() || ref.getRef_id() == game.getRef2() || ref.getRef_id() == game.getRef3()){
+                    System.out.println("Game Placement Failed - Referee already has a game that day");
                     return false;
                 }
             }
+            if(game.getHome_team_id() == home_team.getTeam_id() || game.getHome_team_id() == guest_team.getTeam_id() ||
+                    game.getGuest_team_id() == home_team.getTeam_id() || game.getGuest_team_id() == guest_team.getTeam_id()){
+                System.out.println("Game Placement Failed - Team already has a game that day");
+                return false;
+            }
         }
-        return false;
+        return dbController.InsertGame(game_id, home_team.getTeam_id(), guest_team.getTeam_id(),
+                threereferees.get(0).getRef_id(), threereferees.get(1).getRef_id(), threereferees.get(2).getRef_id(), date, field);
     }
 
 
-
-
-    public boolean checkTeams(Team home_team, Team guest_team, Date date) {
-        if( home_team == null || guest_team == null ||  home_team.equals(guest_team)  || date == null){
-            System.out.println("Game Placement Failed - Invalid Input");
-            return false;
-        }
-        return false;
-    }
-
-    public boolean checkThreeReferres(ArrayList<Referee> threereferees) {
-        if( threereferees == null || threereferees.size() != 3 ){
-            System.out.println("Game Placement Failed - Invalid Input");
-            return false;
-        }
-        return false;
-    }
-
-    public boolean placeGame(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date) {
-        return false;
-    }
 }

@@ -1,16 +1,19 @@
 package Domain;
 
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class Team {
     private int team_id;
     private String name;
     private String field;
-    private String league;
+    private ArrayList<Game> games;
 
-    public Team(int team_id, String name, String field, String league) {
+    public Team(int team_id, String name, String field) {
         this.team_id = team_id;
         this.name = name;
         this.field = field;
-        this.league = league;
+        this.games = new ArrayList<>();
     }
 
     @Override
@@ -21,6 +24,11 @@ public class Team {
             return false;
         Team other = (Team) o;
         return this.getTeam_id() == other.getTeam_id();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team_id);
     }
 
     public String getName() {
@@ -47,11 +55,32 @@ public class Team {
         this.field = field;
     }
 
-    public String getLeague() {
-        return league;
+    public ArrayList<Game> getGames() {
+        return games;
     }
 
-    public void setLeague(String league) {
-        this.league = league;
+    public void setGames(ArrayList<Game> games) {
+        this.games = games;
     }
+
+    public Game getGame(int id) {
+        for (int i = 0; i < this.games.size(); i++) {
+            if(this.games.get(i).getGame_id() == id){
+                return this.games.get(i);
+            }
+        }
+        return null;
+    }
+
+    public boolean addGame(Game game) {
+        if(this.getGame(game.getGame_id()) != null) {
+            System.out.println("Game Already Exists in for Team");
+            return false;
+        }
+        else{
+            this.games.add(game);
+            return true;
+        }
+    }
+
 }

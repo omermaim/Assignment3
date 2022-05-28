@@ -2,6 +2,7 @@ package Domain;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import DB.DbAdapter;
 import DB.DbController;
@@ -41,20 +42,20 @@ public class system {
 
     }
 
-    public boolean addReferee(int ID, String name, String phoneNumber, Date birthday, String username, String password) {
+    public boolean addReferee(int ref_id, String name, String phoneNumber, Date birthday, String username, String password) {
         /*check arguments*/
-        if(ID <= 0 || name == null || phoneNumber == null ||  birthday == null || username == null || password == null){
+        if(ref_id <= 0 || name == null || phoneNumber == null ||  birthday == null || username == null || password == null){
             System.out.println("Referee Registration Failed - Invalid Input");
             return false;
         }
-        /*check if user or referee ID exists*/
-        else if (db.refereeExists(ID, username)) {
+        /*check if user or referee ref_id exists*/
+        else if (db.refereeExists(ref_id, username)) {
             System.out.println("Referee Registration Failed - Username or ID already exists");
             return false;
         }
         /* register referee*/
         else {
-            if (db.addReferee(ID, name, phoneNumber, birthday, username, password)){
+            if (db.addReferee(ref_id, name, phoneNumber, birthday, username, password)){
                 System.out.println("Add Referee successfully");
                 return true;
             } else {
@@ -65,20 +66,14 @@ public class system {
 
     }
 
-
-    public boolean gamePlacement(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date) {
+    public boolean gamePlacement(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date, String field) {
         /*check arguments*/
-        if(db.checkGameID(game_id) && db.checkTeams(home_team, guest_team, date) && db.checkThreeReferres(threereferees)){
+        if(game_id <= 0 || home_team == null || guest_team == null || home_team.equals(guest_team) || date == null ||
+                threereferees == null || threereferees.size() != 3 || new HashSet<>(threereferees).size() != 3 || field == null){
             System.out.println("Game Placement Failed - Invalid Input");
             return false;
         }
-        else if(db.placeGame(game_id, home_team, guest_team, threereferees, date)){
-            return true;
-        }
-        else{
-            return false;
-        }
-
+        return db.placeGame(game_id, home_team, guest_team, threereferees, date, field);
     }
 
 

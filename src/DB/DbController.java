@@ -30,18 +30,20 @@ public class DbController {
             Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(
-                    "SELECT ID, name, phonenumber, birthday, username, password " +
-                        "FROM (Referee INNER JOIN Users ON Referee.ID == Users.UserID);");
+                    "SELECT ref_id, name, phonenumber, birthday, username, password " +
+                        "FROM (Referee INNER JOIN Users ON Referee.ref_id == Users.UserID);");
 
             ArrayList<Referee> res = new ArrayList<>();
+            ArrayList<Game> games = this.getAllGames();
             while (rs.next()) {
                 Referee referee = new Referee(
-                        rs.getInt("ID"),
+                        rs.getInt("ref_id"),
                         rs.getString("name"),
                         rs.getString("phonenumber"),
                         rs.getDate("birthday"),
                         rs.getString("username"),
                         rs.getString("password"));
+                referee.setGames(this.getRefereeGames(referee, games));
                 res.add(referee);
             }
             return res;
@@ -51,11 +53,19 @@ public class DbController {
         return null;
     }
 
+    private ArrayList<Game> getRefereeGames(Referee ref, ArrayList<Game> games) {
+        games.removeIf(game -> {
+            ArrayList<Referee> gameRefs = game.getReferees();
+            return gameRefs.contains(ref);
+        });
+        return games;
+    }
+
     public boolean insertReferee(int id, String name, String PhoneNumber, Date birthday){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO referee(ID, name, PhoneNumber, birthday)\n" +
+                    "INSERT INTO referee(ref_id, name, PhoneNumber, birthday)\n" +
                     "VALUES ( ? , ? , ? , ? );");
             stmt.setInt(1, id);
             stmt.setString(2, name);
@@ -113,13 +123,15 @@ public class DbController {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Team");
             ArrayList<Team> res = new ArrayList<>();
+            ArrayList<Game> games = this.getAllGames();
             while (rs.next()) {
-                Team user  = new Team(
+                Team team  = new Team(
                         rs.getInt("team_id"),
                         rs.getString("name"),
-                        rs.getString("field"),
-                        rs.getString("league"));
-                res.add(user);
+                        rs.getString("field"));
+
+                team.setGames(this.getTeamGames(team.getTeam_id(), games));
+                res.add(team);
             }
             return res;
         } catch (SQLException e ) {
@@ -128,17 +140,21 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertTeam(int team_id, String name, String field, String league){
+    private ArrayList<Game> getTeamGames(int id, ArrayList<Game> games) {
+        games.removeIf(game -> game.getGuest_team_id() != id && game.getHome_team_id() != id);
+        return games;
+    }
+
+    public boolean InsertTeam(int team_id, String name, String field){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO Team(team_id, name, field, league)\n" +
-                            "VALUES ( ? , ? , ? , ?);");
+                    "INSERT INTO Team(team_id, name, field)\n" +
+                            "VALUES ( ? , ? , ? );");
 
             stmt.setInt(1, team_id);
             stmt.setString(2, name);
             stmt.setString(3, field);
-            stmt.setString(4, league);
 
             return stmt.execute();
         } catch (SQLException e ) {
@@ -154,13 +170,16 @@ public class DbController {
             ResultSet rs = stmt.executeQuery("select * from Game");
             ArrayList<Game> res = new ArrayList<>();
             while (rs.next()) {
-                Game user  = new Game(
+                Game game  = new Game(
                         rs.getInt("game_id"),
                         rs.getInt("home_team_id"),
                         rs.getInt("guest_team_id"),
+                        rs.getInt("ref1"),
+                        rs.getInt("ref2"),
+                        rs.getInt("ref3"),
                         rs.getDate("game_date"),
                         rs.getString("field"));
-                res.add(user);
+                res.add(game);
             }
             return res;
         } catch (SQLException e ) {
@@ -169,18 +188,21 @@ public class DbController {
         return null;
     }
 
-    public boolean InsertGame(int game_id, int home_team_id, int guest_team_id, Date game_date, String field){
+    public boolean InsertGame(int game_id, int home_team_id, int guest_team_id, int ref1, int ref2, int ref3, Date game_date, String field){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
                     "INSERT INTO Game(game_id, home_team, guest_team, game_date)\n" +
-                            "VALUES ( ? , ? , ? , ? , ?);");
+                            "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? );");
 
             stmt.setInt(1, game_id);
             stmt.setInt(2, home_team_id);
             stmt.setInt(3, guest_team_id);
-            stmt.setDate(4, game_date);
-            stmt.setString(5, field);
+            stmt.setInt(4, ref1);
+            stmt.setInt(5, ref2);
+            stmt.setInt(6, ref3);
+            stmt.setDate(7, game_date);
+            stmt.setString(8, field);
 
             return stmt.execute();
         } catch (SQLException e ) {
@@ -188,6 +210,56 @@ public class DbController {
         }
         return false;
     }
+
+    public Game getGameById(int game_id) {
+        try {
+            Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement("select * from Game WHERE Game.game_id == ? ");
+            stmt.setInt(1, game_id);
+            ResultSet rs = stmt.executeQuery();
+            Game game  = new Game(
+                    rs.getInt("game_id"),
+                    rs.getInt("home_team_id"),
+                    rs.getInt("guest_team_id"),
+                    rs.getInt("ref1"),
+                    rs.getInt("ref2"),
+                    rs.getInt("ref3"),
+                    rs.getDate("game_date"),
+                    rs.getString("field"));
+
+            return game;
+        } catch (SQLException e ) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    public ArrayList<Game> getAllGamesByDate(Date game_date) {
+        try {
+            Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement("select * from Game WHERE Game.game_date == ? ");
+            stmt.setDate(1, game_date);
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<Game> res = new ArrayList<>();
+            while (rs.next()) {
+                Game game  = new Game(
+                        rs.getInt("game_id"),
+                        rs.getInt("home_team_id"),
+                        rs.getInt("guest_team_id"),
+                        rs.getInt("ref1"),
+                        rs.getInt("ref2"),
+                        rs.getInt("ref3"),
+                        rs.getDate("game_date"),
+                        rs.getString("field"));
+                res.add(game);
+            }
+            return res;
+        } catch (SQLException e ) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
 
     public void createTables(){
         try {
@@ -200,7 +272,7 @@ public class DbController {
                 "Drop Table If EXISTS Game;\n" +
                 "\n" +
                 "CREATE TABLE Referee (\n" +
-                "    ID int NOT NULL PRIMARY KEY,\n" +
+                "    ref_id int NOT NULL PRIMARY KEY,\n" +
                 "    name varchar(255) NOT NULL,\n" +
                 "    PhoneNumber varchar(15),\n" +
                 "    birthday DATE\n" +
@@ -210,20 +282,22 @@ public class DbController {
                 "    username varchar(16) NOT NULL PRIMARY KEY,\n" +
                 "    password varchar(16) NOT NULL,\n" +
                 "\tUserID int NOT NULL,\n" +
-                "\tFOREIGN KEY(UserID) REFERENCES Referee(ID)\n" +
+                "\tFOREIGN KEY(UserID) REFERENCES Referee(ref_id)\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE Team (\n" +
                 "    team_id int NOT NULL PRIMARY KEY,\n" +
                 "    name varchar(255) NOT NULL,\n" +
                 "    field varchar(255) NOT NULL,\n" +
-                "    league varchar(255) NOT NULL\n" +
                 ");\n" +
                 "\n" +
                 "CREATE TABLE Game (\n" +
                 "    game_id int NOT NULL PRIMARY KEY,\n" +
                 "    home_team int NOT NULL REFERENCES Team(team_id),\n" +
                 "    guest_team int NOT NULL REFERENCES Team(team_id),\n" +
+                "    ref1 int NOT NULL REFERENCES Referee(ref_id),\n" +
+                "    ref2 int NOT NULL REFERENCES Referee(ref_id),\n" +
+                "    ref3 int NOT NULL REFERENCES Referee(ref_id),\n" +
                 "    game_date DATE NOT NULL,\n" +
                 "    field varchar(255) NOT NULL\n" +
                 ");");
