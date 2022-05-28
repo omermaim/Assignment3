@@ -32,10 +32,15 @@ public class system {
             return false;
         }
         User user = db.getUser(username);
-        if(user == null || user.getPassword() != password) {
+        if(user == null || !user.getPassword().equals(password)) {
             System.out.println("Login Failed - Invalid Username or Password");
             return false;
-        } else{
+        }
+        else if(LoggedInUsers.stream().anyMatch(u -> u.getUsername().equals(username))){
+            System.out.println("Login Failed - User already logged in");
+            return false;
+        }
+        else{
             this.LoggedInUsers.add(user);
             return true;
         }

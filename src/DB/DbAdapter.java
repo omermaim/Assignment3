@@ -19,7 +19,7 @@ public class DbAdapter {
         ArrayList<User> users = dbController.getAllUsers();
         if(users != null){
             for (int i = 0; i < users.size(); i++) {
-                if(users.get(i).getUsername() == username){
+                if(users.get(i).getUsername().equals(username)){
                     return users.get(i);
                 }
             }
@@ -31,7 +31,7 @@ public class DbAdapter {
         ArrayList<Referee> referees = dbController.getAllReferees();
         if(referees != null){
             for (int i = 0; i < referees.size(); i++) {
-                if(referees.get(i).getUsername() == username || referees.get(i).getUserID() == ref_id){
+                if(referees.get(i).getUsername().equals(username) || referees.get(i).getUserID() == ref_id){
                     return true;
                 }
             }
@@ -54,7 +54,7 @@ public class DbAdapter {
             System.out.println("Game Placement Failed - Game ID already exists");
             return false;
         }
-        else if(home_team.getField() != field && guest_team.getField() != field){
+        else if(!home_team.getField().equals(field) && !guest_team.getField().equals(field)){
             System.out.println("Game Placement Failed - Field doesn't belong to any of the teams");
             return false;
         }
