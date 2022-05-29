@@ -20,6 +20,7 @@ class UserServiceTest {
     static void beforeUnitTests(){
         userService = new UserService();
         dbController = new DbController();
+        /**/
         dbController.createTables();
         /*TODO:
             Maybe it's better to add this user to DB instead of doing it here*/
@@ -40,6 +41,8 @@ class UserServiceTest {
         userService.addTeam(1, "Hodisans", "sami-ofer");
         userService.addTeam(2, "Maimons", "nokia");
         userService.addTeam(3, "team3", "kunhiya");
+        userService.addTeam(4, "team4", "Doha");
+        userService.addTeam(5, "team5", "Bloomfield");
 
     }
 
@@ -69,12 +72,12 @@ class UserServiceTest {
                 new Date(1994,6,26), "CEOtomer", "tomer123"));
     }
 
-/*    @Test
-    void addRefereeMissingItems() {
-        *//*missing id*//*
-        assertFalse(userService.addReferee(, "Yaniv Gadol", "054-1234567",
+    @Test
+    void addRefereeMissingId() {
+        /*missing id*/
+        assertFalse(userService.addReferee(0, "Yaniv Gadol", "054-1234567",
                 new Date(1994,1,1), "tomer", "tomer123"));
-    }*/
+    }
 
     @Test
     void addRefereeInvalidBirthDay() {
@@ -107,13 +110,18 @@ class UserServiceTest {
 
     @Test
     void loginAlreadyLogged() {
-        /*TODO :
-        *  Ask Tomer about logout or think of an elegant way to test it
-        * */
-        userService.addReferee(999, "Ben Gurion", "054-5872007",
-                new Date(1886,10,16), "KingDavid", "bgu1886");
-        userService.Login("KingDavid", "bgu1886");
-        assertFalse(userService.Login("KingDavid", "bgu1886"));
+        /*need to run login before it */
+        assertFalse(userService.Login("bgu4ever", "bgu2022"));
+//        userService.addReferee(999, "Ben Gurion", "054-5872007",
+//                new Date(1886,10,16), "KingDavid", "bgu1886");
+//        userService.Login("KingDavid", "bgu1886");
+//        assertFalse(userService.Login("KingDavid", "bgu1886"));
+    }
+
+    @Test
+    void loginNullPassword() {
+        /*password:null*/
+        assertFalse(userService.Login("Dylan", null));
     }
 
     /*End of login tests */
@@ -126,16 +134,10 @@ class UserServiceTest {
     @Test
     void gamePlacement() {
         //refs
-//        assertTrue(userService.addReferee(2, "Weitzman Tomer Weitzman", "050-8873928",
-//                new Date(1994,6,26), "Tomer", "tomer123"));
-//        assertTrue(userService.addReferee(15, "Man Omri Man", "052-5216644",
-//                new Date(1993,12,15), "Omri", "tomer555"));
-//        assertTrue(userService.addReferee(31, "Weitzman Dylan Weitzman", "050-8873928",
-//                new Date(2000,5,31), "Dylan", "dylan123"));
-        ArrayList<Referee> threereferees = dbController.getAllReferees();
-//        assertTrue(userService.addReferee(4, "ref4", "050-8873928",
-//                new Date(1994,6,26), "ref4", "tomer123"));
-
+        ArrayList<Referee> threereferees = new ArrayList<>();
+        threereferees.add(dbController.getRefereeById(2));
+        threereferees.add(dbController.getRefereeById(15));
+        threereferees.add(dbController.getRefereeById(31));
         //Teams
         Team team1 = dbController.getTeamById(1);
         Team team2 = dbController.getTeamById(2);
@@ -148,8 +150,6 @@ class UserServiceTest {
         assertFalse(userService.gamePlacement(1,team1,team1, threereferees, new Date(2022,8,1), team1.getField()));
         //field doesn't belong to either team
         assertFalse(userService.gamePlacement(1,team1,team2, threereferees, new Date(2022,8,1), "WonderLand"));
-
-
     }
 
     @Test
@@ -157,11 +157,11 @@ class UserServiceTest {
         /*Referee 2 (tomer) not available at 1/8/22 because he works in team1.getField() (game_id:1) */
         ArrayList<Referee> threereferees = new ArrayList<>();
         threereferees.add(dbController.getRefereeById(20));
-        threereferees.add(dbController.getRefereeById(2));
+        threereferees.add(dbController.getRefereeById(2));//not available at 1/8/22 because he works in team1.getField()
         threereferees.add(dbController.getRefereeById(4));
         //Teams
-        Team team1 = dbController.getTeamById(1);
-        Team team2 = dbController.getTeamById(2);
+        Team team1 = dbController.getTeamById(4);
+        Team team2 = dbController.getTeamById(5);
 
         assertFalse(userService.gamePlacement(11,team1,team2, threereferees, new Date(2022,8,1), team1.getField()));
 
@@ -176,10 +176,38 @@ class UserServiceTest {
         threereferees.add(dbController.getRefereeById(4));
         //Teams
         Team team1 = dbController.getTeamById(1);
-        userService.addTeam(3, "team3", "kunhiya");
         Team team3 = dbController.getTeamById(3);
 
         assertFalse(userService.gamePlacement(12,team1,team3, threereferees, new Date(2022,8,1), team1.getField()));
+    }
+
+    @Test
+    void gamePlacementSameTeam() {
+        //refs
+        ArrayList<Referee> threereferees = new ArrayList<>();
+        threereferees.add(dbController.getRefereeById(20));
+        threereferees.add(dbController.getRefereeById(5));
+        threereferees.add(dbController.getRefereeById(4));
+        //Teams
+        Team team1 = dbController.getTeamById(1);
+
+        //same team
+        assertFalse(userService.gamePlacement(1,team1,team1, threereferees, new Date(2022,8,1), team1.getField()));
+    }
+
+    @Test
+    void gamePlacementFieldForeign() {
+        //refs
+        ArrayList<Referee> threereferees = new ArrayList<>();
+        threereferees.add(dbController.getRefereeById(20));
+        threereferees.add(dbController.getRefereeById(5));
+        threereferees.add(dbController.getRefereeById(4));
+        //Teams
+        Team team1 = dbController.getTeamById(4);
+        Team team2 = dbController.getTeamById(5);
+
+        //field doesn't belong to either team
+        assertFalse(userService.gamePlacement(1,team1,team2, threereferees, new Date(2022,8,1), "WonderLand"));
     }
 
     /*End of Game Placement tests*/
