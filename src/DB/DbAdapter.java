@@ -69,7 +69,7 @@ public class DbAdapter {
         ArrayList<Game> gamesInDate = dbController.getAllGamesByDate(date);
         for (Game game : gamesInDate){
             for (Referee ref : threereferees) {
-                if(game.getReferees().contains(ref)){
+                if(game.getRef1() == ref.getRef_id() || game.getRef2() == ref.getRef_id() || game.getRef3() == ref.getRef_id()){
                     System.out.println("Game Placement Failed - Referee already has a game that day");
                     return false;
                 }

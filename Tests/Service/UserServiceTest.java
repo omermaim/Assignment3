@@ -40,7 +40,7 @@ class UserServiceTest {
         userService.addTeam(2, "Maimons", "nokia");
         userService.addTeam(3, "team3", "kunhiya");
         userService.addTeam(4, "team4", "Doha");
-
+        System.out.println("Initialization Finished\n");
     }
 
     @BeforeEach
@@ -204,8 +204,8 @@ class UserServiceTest {
         threereferees.add(dbController.getRefereeById(4));
         threereferees.add(dbController.getRefereeById(5));
         //Teams
-        Team team3 = dbController.getTeamById(4);
-        Team team4 = dbController.getTeamById(5);
+        Team team3 = dbController.getTeamById(3);
+        Team team4 = dbController.getTeamById(4);
 
         assertFalse(userService.gamePlacement(2,team3,team4, threereferees, new Date(2022 - 1900,8,1), team3.getField()));
 

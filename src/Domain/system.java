@@ -40,6 +40,7 @@ public class system {
         }
         else{
             this.LoggedInUsers.add(user);
+            System.out.println("User Logged In Successfully");
             return true;
         }
 
@@ -83,7 +84,6 @@ public class system {
             return true;
         }
         else{
-            System.out.println("Game Placement Failed - Game ID already exists");
             return false;
         }
 
