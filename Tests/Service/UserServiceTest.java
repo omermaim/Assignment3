@@ -102,11 +102,6 @@ class UserServiceTest {
                 new Date(1994 - 1900,6,26), "tomer", null));
         assertFalse(userService.addReferee(11111, "tomer weitzman", "050-8873928",
                 new Date(1994 - 1900,6,26), "tomer",  "    "));
-    }
-
-    @Test
-    @Order(5)
-    void addRefereeInvalidBirthDay() {
         /*1.1.2023 its an invalid date of birth*/
         assertFalse(userService.addReferee(11111, "Big Yaniv", "054-5872007",
                 new Date(2023 - 1900,1,1), "Yaniv Katan", "yaniv20"));
@@ -126,7 +121,7 @@ class UserServiceTest {
 
     @Test
     @Order(7)
-    void loginIncorrectUsername() {
+    void loginInvalidUsername() {
         /*No username - WrongTomer*/
         assertFalse(userService.Login("WrongTomer", "tomer123"));
         /*username : null*/
@@ -135,7 +130,7 @@ class UserServiceTest {
 
     @Test
     @Order(8)
-    void loginWrongPassword() {
+    void loginInvalidPassword() {
         /*Wrong Password*/
         assertFalse(userService.Login("Tomer", "Wrongtomer123"));
         /*password : null*/
@@ -182,6 +177,8 @@ class UserServiceTest {
 
         //same id
         assertFalse(userService.gamePlacement(1,team3,team4, threereferees, new Date(2022 - 1900,8,1), team3.getField()));
+        //Invalid id
+        assertFalse(userService.gamePlacement(-55,team3,team4, threereferees, new Date(2022 - 1900,8,1), team3.getField()));
     }
 
     @Test
@@ -217,22 +214,31 @@ class UserServiceTest {
 
     @Test
     @Order(14)
-    void gamePlacementSameTeam() {
+    void gamePlacementInvalidArgs() {
         //refs
         ArrayList<Referee> threereferees = new ArrayList<>();
         threereferees.add(dbController.getRefereeById(4));
         threereferees.add(dbController.getRefereeById(5));
         threereferees.add(dbController.getRefereeById(6));
         //Teams
+        Team team3 = dbController.getTeamById(3);
         Team team4 = dbController.getTeamById(4);
 
         //same team
         assertFalse(userService.gamePlacement(4,team4,team4, threereferees, new Date(2022 - 1900,8,1), team4.getField()));
+        //Illegal Date
+        assertFalse(userService.gamePlacement(4,team3,team4, threereferees, new Date(2000 - 1900,8,1), team3.getField()));
+        //null arguments
+        assertFalse(userService.gamePlacement(4,null,team4, threereferees, new Date(2000 - 1900,8,1), team3.getField()));
+        assertFalse(userService.gamePlacement(4,team3,null, threereferees, new Date(2000 - 1900,8,1), team3.getField()));
+        assertFalse(userService.gamePlacement(4,team3,team4, null, new Date(2000 - 1900,8,1), team3.getField()));
+        assertFalse(userService.gamePlacement(4,team3,team4, threereferees, null, team3.getField()));
+        assertFalse(userService.gamePlacement(4,team3,team4, threereferees, new Date(2000 - 1900,8,1), null));
     }
 
     @Test
     @Order(15)
-    void gamePlacementFieldForeign() {
+    void gamePlacementForeignField() {
         //refs
         ArrayList<Referee> threereferees = new ArrayList<>();
         threereferees.add(dbController.getRefereeById(4));
