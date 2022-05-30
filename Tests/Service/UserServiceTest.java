@@ -127,35 +127,24 @@ class UserServiceTest {
     @Test
     @Order(7)
     void loginIncorrectUsername() {
-        /*There is no user with username "WrongTomer"*/
+        /*No username - WrongTomer*/
         assertFalse(userService.Login("WrongTomer", "tomer123"));
+        /*username : null*/
+        assertFalse(userService.Login(null, "tomer123"));
     }
 
     @Test
     @Order(8)
     void loginWrongPassword() {
-        /*2022 is not the password of the user "Wrongtomer123"*/
+        /*Wrong Password*/
         assertFalse(userService.Login("Tomer", "Wrongtomer123"));
-    }
-
-    @Test
-    @Order(9)
-    void loginNullUsername() {
-        /*password:null*/
-        assertFalse(userService.Login(null, "tomer123"));
-    }
-
-    @Test
-    @Order(10)
-    void loginNullPassword() {
-        /*password:null*/
+        /*password : null*/
         assertFalse(userService.Login("Tomer", null));
     }
 
     @Test
-    @Order(11)
+    @Order(9)
     void loginAlreadyLogged() {
-        /*need to run login before it */
         assertFalse(userService.Login("bgu4ever", "bgu2022"));
     }
 
@@ -164,7 +153,7 @@ class UserServiceTest {
 
     /*Game Placement tests */
     @Test
-    @Order(12)
+    @Order(10)
     void gamePlacement() {
         //refs
         ArrayList<Referee> threereferees = new ArrayList<>();
@@ -179,7 +168,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(13)
+    @Order(11)
     void gamePlacementSameId() {
         //refs
         ArrayList<Referee> threereferees = new ArrayList<>();
@@ -196,7 +185,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(14)
+    @Order(12)
     void gamePlacementRefereeNotAvailable() {
         /*Referee 2 (tomer) not available at 1/8/22 because he works in team1.getField() (game_id:1) */
         ArrayList<Referee> threereferees = new ArrayList<>();
@@ -208,11 +197,10 @@ class UserServiceTest {
         Team team4 = dbController.getTeamById(4);
 
         assertFalse(userService.gamePlacement(2,team3,team4, threereferees, new Date(2022 - 1900,8,1), team3.getField()));
-
     }
 
     @Test
-    @Order(15)
+    @Order(13)
     void gamePlacementTeamNotAvailable() {
         /*Team 1 (Hodisans) is not available because they supposed to lose to team "Maimons" in "Sami-Ofer" on this date */
         ArrayList<Referee> threereferees = new ArrayList<>();
@@ -223,11 +211,12 @@ class UserServiceTest {
         Team team1 = dbController.getTeamById(1); //not available at 1/8/22 because he works in team1.getField()
         Team team3 = dbController.getTeamById(3);
 
+        //Team assigned to a game at the same date
         assertFalse(userService.gamePlacement(3,team1,team3, threereferees, new Date(2022 - 1900,8,1), team1.getField()));
     }
 
     @Test
-    @Order(16)
+    @Order(14)
     void gamePlacementSameTeam() {
         //refs
         ArrayList<Referee> threereferees = new ArrayList<>();
@@ -242,7 +231,7 @@ class UserServiceTest {
     }
 
     @Test
-    @Order(17)
+    @Order(15)
     void gamePlacementFieldForeign() {
         //refs
         ArrayList<Referee> threereferees = new ArrayList<>();
