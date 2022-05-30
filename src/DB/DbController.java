@@ -237,7 +237,7 @@ public class DbController {
                         rs.getInt("game_id"),
                         rs.getInt("home_team"),
                         rs.getInt("guest_team"),
-                        rs.getInt("ref1"),
+                        rs.getInt("headRef"),
                         rs.getInt("ref2"),
                         rs.getInt("ref3"),
                         rs.getDate("game_date"),
@@ -252,17 +252,17 @@ public class DbController {
         return null;
     }
 
-    public boolean insertGame(int game_id, int home_team_id, int guest_team_id, int ref1, int ref2, int ref3, Date game_date, String field){
+    public boolean insertGame(int game_id, int home_team_id, int guest_team_id, int headRef, int ref2, int ref3, Date game_date, String field){
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO Game(game_id, home_team, guest_team, ref1, ref2, ref3, game_date, field)\n" +
+                    "INSERT INTO Game(game_id, home_team, guest_team, headRef, ref2, ref3, game_date, field)\n" +
                             "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? );");
 
             stmt.setInt(1, game_id);
             stmt.setInt(2, home_team_id);
             stmt.setInt(3, guest_team_id);
-            stmt.setInt(4, ref1);
+            stmt.setInt(4, headRef);
             stmt.setInt(5, ref2);
             stmt.setInt(6, ref3);
             stmt.setDate(7, game_date);
@@ -291,7 +291,7 @@ public class DbController {
                     rs.getInt("game_id"),
                     rs.getInt("home_team"),
                     rs.getInt("guest_team"),
-                    rs.getInt("ref1"),
+                    rs.getInt("headRef"),
                     rs.getInt("ref2"),
                     rs.getInt("ref3"),
                     rs.getDate("game_date"),
@@ -318,7 +318,7 @@ public class DbController {
                         rs.getInt("game_id"),
                         rs.getInt("home_team"),
                         rs.getInt("guest_team"),
-                        rs.getInt("ref1"),
+                        rs.getInt("headRef"),
                         rs.getInt("ref2"),
                         rs.getInt("ref3"),
                         rs.getDate("game_date"),
@@ -362,7 +362,7 @@ public class DbController {
                     "    game_id int NOT NULL PRIMARY KEY,\n" +
                     "    home_team int NOT NULL REFERENCES Team(team_id),\n" +
                     "    guest_team int NOT NULL REFERENCES Team(team_id),\n" +
-                    "    ref1 int NOT NULL REFERENCES Referee(ref_id),\n" +
+                    "    headRef int NOT NULL REFERENCES Referee(ref_id),\n" +
                     "    ref2 int NOT NULL REFERENCES Referee(ref_id),\n" +
                     "    ref3 int NOT NULL REFERENCES Referee(ref_id),\n" +
                     "    game_date DATE NOT NULL,\n" +

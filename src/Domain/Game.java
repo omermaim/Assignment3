@@ -7,17 +7,17 @@ public class Game {
     private int game_id;
     private int home_team_id;
     private int guest_team_id;
-    private int ref1;
+    private int headRef;
     private int ref3;
     private int ref2;
     private Date game_date;
     private String field;
     private ArrayList<Referee> referees;
 
-    public Game(int game_id, int home_team, int guest_team, int ref1, int ref2, int ref3, Date game_date, String field) {
+    public Game(int game_id, int home_team, int guest_team, int headRef, int ref2, int ref3, Date game_date, String field) {
         this.home_team_id = home_team;
         this.guest_team_id = guest_team;
-        this.ref1 = ref1;
+        this.headRef = headRef;
         this.ref2 = ref2;
         this.ref3 = ref3;
         this.game_date = game_date;
@@ -54,12 +54,12 @@ public class Game {
         this.home_team_id = home_team_id;
     }
 
-    public int getRef1() {
-        return ref1;
+    public int getHeadRef() {
+        return headRef;
     }
 
-    public void setRef1(int ref1) {
-        this.ref1 = ref1;
+    public void setHeadRef(int headRef) {
+        this.headRef = headRef;
     }
 
     public int getRef3() {
