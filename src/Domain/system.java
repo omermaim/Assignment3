@@ -17,17 +17,15 @@ public class system {
         LoggedInUsers = new ArrayList<>();
     }
 
-
     public static system getinstance(){
         if(system==null){
             system = new system();
         }
         return system;
-
     }
 
     public boolean Login(String username, String password) {
-        if(username == null || password == null){
+        if(username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()){
             System.out.println("Login Failed - Invalid Input");
             return false;
         }
@@ -49,7 +47,9 @@ public class system {
 
     public boolean addReferee(int ref_id, String name, String phoneNumber, Date birthday, String username, String password) {
         /*check arguments*/
-        if(ref_id <= 0 || name == null || phoneNumber == null ||  birthday == null || username == null || password == null){
+        if(ref_id <= 0 || name == null || name.trim().isEmpty() || phoneNumber == null || phoneNumber.trim().isEmpty() ||
+                birthday == null || birthday.after(new Date(System.currentTimeMillis())) ||
+                username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()){
             System.out.println("Referee Registration Failed - Invalid Input");
             return false;
         }
@@ -72,18 +72,27 @@ public class system {
 
     public boolean gamePlacement(int game_id, Team home_team, Team guest_team, ArrayList<Referee> threereferees, Date date, String field) {
         /*check arguments*/
-        if(game_id <= 0 || home_team == null || guest_team == null || home_team.equals(guest_team) || date == null ||
-                threereferees == null || threereferees.size() != 3 || new HashSet<>(threereferees).size() != 3 || field == null){
+        if(game_id <= 0 || home_team == null || guest_team == null || home_team.equals(guest_team) ||
+                date == null || date.before(new Date(System.currentTimeMillis())) || threereferees == null ||
+                threereferees.size() != 3 || new HashSet<>(threereferees).size() != 3 || field == null){
             System.out.println("Game Placement Failed - Invalid Input");
             return false;
         }
-        return db.placeGame(game_id, home_team, guest_team, threereferees, date, field);
+        else if(db.placeGame(game_id, home_team, guest_team, threereferees, date, field)){
+            System.out.println("Placed Game successfully");
+            return true;
+        }
+        else{
+            System.out.println("Game Placement Failed - Game ID already exists");
+            return false;
+        }
+
     }
 
 
     public boolean addTeam(int team_id, String name, String field) {
         /*check arguments*/
-        if(team_id <= 0 || name == null || field == null){
+        if(team_id <= 0 || name == null || name.trim().isEmpty() || field == null || field.trim().isEmpty()){
             System.out.println("Referee Registration Failed - Invalid Input");
             return false;
         }

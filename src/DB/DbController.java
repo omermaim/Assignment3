@@ -42,9 +42,10 @@ public class DbController {
                         rs.getDate("birthday"),
                         rs.getString("username"),
                         rs.getString("password"));
-                referee.setGames(this.getRefereeGames(referee, games));
+                referee.setGames(getRefereeGames(referee, games));
                 res.add(referee);
             }
+            conn.close();
             return res;
         } catch (SQLException e) {
             System.out.println(e);
@@ -72,6 +73,7 @@ public class DbController {
             stmt.setDate(4, birthday);
 
             stmt.execute();
+            conn.close();
             return true;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -82,9 +84,15 @@ public class DbController {
     public Referee getRefereeById(int ref_id) {
         try {
             Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select * from Referee WHERE Referee.ref_id == ? ");
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT ref_id, name, phonenumber, birthday, username, password " +
+                    "FROM (Referee INNER JOIN Users ON Referee.ref_id == Users.UserID) WHERE Referee.ref_id == ? ");
             stmt.setInt(1, ref_id);
             ResultSet rs = stmt.executeQuery();
+            if(rs.isClosed()){
+                conn.close();
+                return null;
+            }
             ArrayList<Game> games = this.getAllGames();
             Referee referee = new Referee(
                     rs.getInt("ref_id"),
@@ -93,8 +101,8 @@ public class DbController {
                     rs.getDate("birthday"),
                     rs.getString("username"),
                     rs.getString("password"));
-
-            referee.setGames(this.getRefereeGames(referee, games));
+            referee.setGames(getRefereeGames(referee, games));
+            conn.close();
             return referee;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -117,6 +125,7 @@ public class DbController {
                         rs.getInt("UserID"));
                 res.add(user);
             }
+            conn.close();
             return res;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -136,6 +145,7 @@ public class DbController {
             stmt.setInt(3, UserID);
 
             stmt.execute();
+            conn.close();
             return true;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -155,10 +165,10 @@ public class DbController {
                         rs.getInt("team_id"),
                         rs.getString("name"),
                         rs.getString("field"));
-
                 team.setGames(this.getTeamGames(team.getTeam_id(), games));
                 res.add(team);
             }
+            conn.close();
             return res;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -167,7 +177,7 @@ public class DbController {
     }
 
     private ArrayList<Game> getTeamGames(int id, ArrayList<Game> games) {
-        games.removeIf(game -> game.getGuest_team_id() != id && game.getHome_team_id() != id);
+        games.removeIf(game -> game.getHome_team_id() != id && game.getGuest_team_id() != id);
         return games;
     }
 
@@ -183,6 +193,7 @@ public class DbController {
             stmt.setString(3, field);
 
             stmt.execute();
+            conn.close();
             return true;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -197,12 +208,17 @@ public class DbController {
             stmt.setInt(1, team_id);
             ResultSet rs = stmt.executeQuery();
             ArrayList<Game> games = this.getAllGames();
+            if(rs.isClosed()){
+                conn.close();
+                return null;
+            }
             Team team  = new Team(
                     rs.getInt("team_id"),
                     rs.getString("name"),
                     rs.getString("field"));
-
             team.setGames(this.getTeamGames(team.getTeam_id(), games));
+
+            conn.close();
             return team;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -219,8 +235,8 @@ public class DbController {
             while (rs.next()) {
                 Game game  = new Game(
                         rs.getInt("game_id"),
-                        rs.getInt("home_team_id"),
-                        rs.getInt("guest_team_id"),
+                        rs.getInt("home_team"),
+                        rs.getInt("guest_team"),
                         rs.getInt("ref1"),
                         rs.getInt("ref2"),
                         rs.getInt("ref3"),
@@ -228,6 +244,7 @@ public class DbController {
                         rs.getString("field"));
                 res.add(game);
             }
+            conn.close();
             return res;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -239,7 +256,7 @@ public class DbController {
         try {
             Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(
-                    "INSERT INTO Game(game_id, home_team, guest_team, game_date)\n" +
+                    "INSERT INTO Game(game_id, home_team, guest_team, ref1, ref2, ref3, game_date, field)\n" +
                             "VALUES ( ? , ? , ? , ? , ? , ? , ? , ? );");
 
             stmt.setInt(1, game_id);
@@ -252,6 +269,7 @@ public class DbController {
             stmt.setString(8, field);
 
             stmt.execute();
+            conn.close();
             return true;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -265,15 +283,22 @@ public class DbController {
             PreparedStatement stmt = conn.prepareStatement("select * from Game WHERE Game.game_id == ? ");
             stmt.setInt(1, game_id);
             ResultSet rs = stmt.executeQuery();
-            return new Game(
+            if(rs.isClosed()){
+                conn.close();
+                return null;
+            }
+            Game game  = new Game(
                     rs.getInt("game_id"),
-                    rs.getInt("home_team_id"),
-                    rs.getInt("guest_team_id"),
+                    rs.getInt("home_team"),
+                    rs.getInt("guest_team"),
                     rs.getInt("ref1"),
                     rs.getInt("ref2"),
                     rs.getInt("ref3"),
                     rs.getDate("game_date"),
                     rs.getString("field"));
+
+            conn.close();
+            return game;
 
         } catch (SQLException e ) {
             System.out.println(e);
@@ -291,8 +316,8 @@ public class DbController {
             while (rs.next()) {
                 Game game  = new Game(
                         rs.getInt("game_id"),
-                        rs.getInt("home_team_id"),
-                        rs.getInt("guest_team_id"),
+                        rs.getInt("home_team"),
+                        rs.getInt("guest_team"),
                         rs.getInt("ref1"),
                         rs.getInt("ref2"),
                         rs.getInt("ref3"),
@@ -300,6 +325,7 @@ public class DbController {
                         rs.getString("field"));
                 res.add(game);
             }
+            conn.close();
             return res;
         } catch (SQLException e ) {
             System.out.println(e);
@@ -343,6 +369,7 @@ public class DbController {
                     "    field varchar(255) NOT NULL\n" +
                     ");");
 
+            conn.close();
             return true;
 
         } catch (SQLException e ) {
