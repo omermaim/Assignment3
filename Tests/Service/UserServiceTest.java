@@ -252,5 +252,40 @@ class UserServiceTest {
         assertFalse(userService.gamePlacement(5,team3,team4, threereferees, new Date(2022 - 1900,8,1), "WonderLand"));
     }
 
+    @Test
+    @Order(16)
+    void integrationTest() {
+        //create and login ref1
+        assertTrue(userService.addReferee(7, "IntegrationTest1", "054-5872007",
+                new Date(1920 - 1900,2,20), "IntegrationTest1", "bgu2022"));
+        assertTrue(userService.Login("IntegrationTest1", "bgu2022"));
+
+        //create and login ref2
+        assertTrue(userService.addReferee(8, "IntegrationTest2", "050-8873928",
+                new Date(1994 - 1900,6,26), "IntegrationTest2", "tomer123"));
+        assertTrue(userService.Login("IntegrationTest2", "tomer123"));
+
+        //create and login ref3
+        assertTrue(userService.addReferee(9, "IntegrationTest3", "052-5216644",
+                new Date(1993 - 1900,12,15), "IntegrationTest3", "tomer555"));
+        assertTrue(userService.Login("IntegrationTest3", "tomer555"));
+
+        //sign in logged user
+        assertFalse(userService.Login("IntegrationTest1", "bgu2022"));
+
+        //refs
+        ArrayList<Referee> threereferees = new ArrayList<>();
+        threereferees.add(dbController.getRefereeById(7));
+        threereferees.add(dbController.getRefereeById(8));
+        threereferees.add(dbController.getRefereeById(9));
+
+        //Teams
+        Team team3 = dbController.getTeamById(3);
+        Team team4 = dbController.getTeamById(4);
+
+        //place game
+        assertTrue(userService.gamePlacement(6,team3,team4, threereferees, new Date(2022 - 1900,12,1), team3.getField()));
+    }
+
     /*End of Game Placement tests*/
 }
